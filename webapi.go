@@ -44,9 +44,17 @@ func (api *WebApi) List(c rocket.CtxData) {
 	if err != nil {
 		errStr = err.Error()
 	}
+
+	protocol := "http"
+	if len(api.cfg.Listen.HTTPS) > 0 {
+		protocol = "https"
+	}
+
 	value := rocket.RenderVars{
-		"info":  info,
-		"error": errStr,
+		"info":          info,
+		"error":         errStr,
+		"domain_suffix": api.cfg.Host.ReverseProxySuffix,
+		"protocol":      protocol,
 	}
 
 	c.Render(api.cfg.Storage.HtmlDir+"/list.html", value)
