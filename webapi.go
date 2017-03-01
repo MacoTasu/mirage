@@ -61,10 +61,19 @@ func (api *WebApi) List(c rocket.CtxData) {
 }
 
 func (api *WebApi) Launcher(c rocket.CtxData) {
-	c.Render(api.cfg.Storage.HtmlDir+"/launcher.html", rocket.RenderVars{
-		"DefaultImage": api.cfg.Docker.DefaultImage,
-		"Parameters":   api.cfg.Parameter,
-	})
+	repoTags, err := app.Docker.ImageList()
+	errStr := ""
+	if err != nil {
+		errStr = err.Error()
+	}
+
+	value := rocket.RenderVars{
+		"repoTags":   repoTags,
+		"error":      errStr,
+		"parameters": api.cfg.Parameter,
+	}
+
+	c.Render(api.cfg.Storage.HtmlDir+"/launcher.html", value)
 }
 
 func (api *WebApi) Launch(c rocket.CtxData) {
