@@ -44,19 +44,36 @@ func (api *WebApi) List(c rocket.CtxData) {
 	if err != nil {
 		errStr = err.Error()
 	}
+
+	protocol := "http"
+	if len(api.cfg.Listen.HTTPS) > 0 {
+		protocol = "https"
+	}
+
 	value := rocket.RenderVars{
-		"info":  info,
-		"error": errStr,
+		"info":          info,
+		"error":         errStr,
+		"domain_suffix": api.cfg.Host.ReverseProxySuffix,
+		"protocol":      protocol,
 	}
 
 	c.Render(api.cfg.Storage.HtmlDir+"/list.html", value)
 }
 
 func (api *WebApi) Launcher(c rocket.CtxData) {
-	c.Render(api.cfg.Storage.HtmlDir+"/launcher.html", rocket.RenderVars{
-		"DefaultImage": api.cfg.Docker.DefaultImage,
-		"Parameters":   api.cfg.Parameter,
-	})
+	repoTags, err := app.Docker.ImageList()
+	errStr := ""
+	if err != nil {
+		errStr = err.Error()
+	}
+
+	value := rocket.RenderVars{
+		"repoTags":   repoTags,
+		"error":      errStr,
+		"parameters": api.cfg.Parameter,
+	}
+
+	c.Render(api.cfg.Storage.HtmlDir+"/launcher.html", value)
 }
 
 func (api *WebApi) Launch(c rocket.CtxData) {

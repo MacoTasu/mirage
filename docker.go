@@ -185,3 +185,21 @@ func (d *Docker) List() ([]Information, error) {
 
 	return result, nil
 }
+
+func (d *Docker) ImageList() ([]string, error) {
+	images, err := d.Client.ListImages(docker.ListImagesOptions{All: true})
+	if err != nil {
+		return nil, err
+	}
+
+	var result []string = make([]string, 0)
+	for _, image := range images {
+		for _, repoTag := range image.RepoTags {
+			if repoTag != "<none>:<none>" {
+				result = append(result, repoTag)
+			}
+		}
+	}
+
+	return result, nil
+}

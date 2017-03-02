@@ -21,10 +21,13 @@
     <th class="col-md-2 text-center">action</th>
   </tr>
 </thead>
+
 <tbody>
+{{ $domain_suffix := .domain_suffix }}
+{{ $protocol := .protocol }}
 {{ range $row := .info }}
   <tr>
-    <td class="col-md-2">{{ $row.SubDomain }}</td>
+    <td class="col-md-2"><a href={{ printf "%s://%s%s" $protocol $row.SubDomain $domain_suffix }}>{{ $row.SubDomain }}</a></td>
     <td class="col-md-2">{{ $row.GitBranch }}</td>
     <td class="col-md-2">{{ $row.Image }}</td>
     <td class="col-md-2">{{ $row.ShortID }}</td>
